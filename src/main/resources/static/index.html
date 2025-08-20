@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dealer & Vehicle Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f9fc;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #4a90e2;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background: #333;
+      padding: 10px;
+    }
+    nav button {
+      background: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    nav button:hover {
+      background: #4a90e2;
+      color: white;
+    }
+    section {
+      display: none;
+      padding: 20px;
+    }
+    section.active {
+      display: block;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin: 20px auto;
+    }
+    input, select, button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    button {
+      background: #4a90e2;
+      color: white;
+      border: none;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #357ab7;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background: #4a90e2;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Dealer & Vehicle Management</h1>
+</header>
+
+<nav>
+  <button onclick="showSection('dealers')">Dealers</button>
+  <button onclick="showSection('vehicles')">Vehicles</button>
+  <button onclick="showSection('payment')">Payment</button>
+</nav>
+
+<!-- Dealer Management -->
+<section id="dealers" class="active">
+  <h2>Dealer Management</h2>
+  <form onsubmit="createDealer(event)">
+    <h3>Add Dealer</h3>
+    <input type="text" id="dealerName" placeholder="Name" required>
+    <input type="email" id="dealerEmail" placeholder="Email" required>
+    <select id="dealerSub">
+      <option value="BASIC">BASIC</option>
+      <option value="PREMIUM">PREMIUM</option>
+    </select>
+    <button type="submit">Add Dealer</button>
+  </form>
+
+  <h3>All Dealers</h3>
+  <button onclick="fetchDealers()">Load Dealers</button>
+  <table id="dealerTable"></table>
+</section>
+
+<!-- Vehicle Management -->
+<section id="vehicles">
+  <h2>Vehicle Management</h2>
+  <form onsubmit="createVehicle(event)">
+    <h3>Add Vehicle</h3>
+    <input type="number" id="vehicleDealerId" placeholder="Dealer ID" required>
+    <input type="text" id="vehicleModel" placeholder="Model" required>
+    <input type="number" id="vehiclePrice" placeholder="Price" required>
+    <select id="vehicleStatus">
+      <option value="AVAILABLE">AVAILABLE</option>
+      <option value="SOLD">SOLD</option>
+    </select>
+    <button type="submit">Add Vehicle</button>
+  </form>
+
+  <h3>All Vehicles</h3>
+  <button onclick="fetchVehicles()">Load Vehicles</button>
+  <table id="vehicleTable"></table>
+</section>
+
+<!-- Payment Simulation -->
+<section id="payment">
+  <h2>Payment Simulation</h2>
+  <form onsubmit="initiatePayment(event)">
+    <input type="number" id="paymentDealerId" placeholder="Dealer ID" required>
+    <input type="number" id="paymentAmount" placeholder="Amount" required>
+    <select id="paymentMethod">
+      <option value="UPI">UPI</option>
+      <option value="CARD">Card</option>
+      <option value="NETBANKING">NetBanking</option>
+    </select>
+    <button type="submit">Initiate Payment</button>
+  </form>
+  <p id="paymentStatus"></p>
+</section>
+
+<script>
+  const BASE_URL = "http://localhost:8080/api";
+
+  function showSection(id) {
+    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+  }
+
+  // Dealer CRUD
+  async function createDealer(event) {
+    event.preventDefault();
+    let dealer = {
+      name: document.getElementById("dealerName").value,
+      email: document.getElementById("dealerEmail").value,
+      subscriptionType: document.getElementById("dealerSub").value
+    };
+    await fetch(`${BASE_URL}/dealers`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(dealer)
+    });
+    alert("Dealer added!");
+    fetchDealers();
+  }
+
+  async function fetchDealers() {
+    let res = await fetch(`${BASE_URL}/dealers`);
+    let data = await res.json();
+    let table = `<tr><th>ID</th><th>Name</th><th>Email</th><th>Subscription</th></tr>`;
+    data.forEach(d => {
+      table += `<tr><td>${d.id}</td><td>${d.name}</td><td>${d.email}</td><td>${d.subscriptionType}</td></tr>`;
+    });
+    document.getElementById("dealerTable").innerHTML = table;
+  }
+
+  // Vehicle CRUD
+  async function createVehicle(event) {
+    event.preventDefault();
+    let vehicle = {
+      dealerId: document.getElementById("vehicleDealerId").value,
+      model: document.getElementById("vehicleModel").value,
+      price: document.getElementById("vehiclePrice").value,
+      status: document.getElementById("vehicleStatus").value
+    };
+    await fetch(`${BASE_URL}/vehicles`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(vehicle)
+    });
+    alert("Vehicle added!");
+    fetchVehicles();
+  }
+
+  async function fetchVehicles() {
+    let res = await fetch(`${BASE_URL}/vehicles`);
+    let data = await res.json();
+    let table = `<tr><th>ID</th><th>Dealer ID</th><th>Model</th><th>Price</th><th>Status</th></tr>`;
+    data.forEach(v => {
+      table += `<tr><td>${v.id}</td><td>${v.dealerId}</td><td>${v.model}</td><td>${v.price}</td><td>${v.status}</td></tr>`;
+    });
+    document.getElementById("vehicleTable").innerHTML = table;
+  }
+
+  // Payment Simulation
+  async function initiatePayment(event) {
+    event.preventDefault();
+    let payment = {
+      dealerId: document.getElementById("paymentDealerId").value,
+      amount: document.getElementById("paymentAmount").value,
+      method: document.getElementById("paymentMethod").value
+    };
+    document.getElementById("paymentStatus").innerText = "Processing...";
+    let res = await fetch(`${BASE_URL}/payment/initiate`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payment)
+    });
+    let data = await res.json();
+    document.getElementById("paymentStatus").innerText = `Payment ID: ${data.id}, Status: ${data.status}`;
+    setTimeout(() => {
+      document.getElementById("paymentStatus").innerText = `Payment ID: ${data.id}, Status: SUCCESS ✅`;
+    }, 5000);
+  }
+</script>
+</body>
+</html>

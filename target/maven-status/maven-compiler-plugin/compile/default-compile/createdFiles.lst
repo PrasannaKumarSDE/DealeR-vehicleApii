@@ -1,0 +1,14 @@
+com\example\Dealer_vehicleApi\Entity\Payment.class
+com\example\Dealer_vehicleApi\DealerVehicleApiApplication.class
+com\example\Dealer_vehicleApi\Entity\Dealer$SubscriptionType.class
+com\example\Dealer_vehicleApi\Controller\DealerController.class
+com\example\Dealer_vehicleApi\Repository\DealerRepository.class
+com\example\Dealer_vehicleApi\Repository\PaymentRepository.class
+com\example\Dealer_vehicleApi\Entity\Dealer.class
+com\example\Dealer_vehicleApi\Entity\Vehicle$Status.class
+com\example\Dealer_vehicleApi\Service\PaymentService.class
+com\example\Dealer_vehicleApi\Entity\Vehicle.class
+com\example\Dealer_vehicleApi\Repository\VehicleRepository.class
+com\example\Dealer_vehicleApi\Controller\PaymentController.class
+com\example\Dealer_vehicleApi\Controller\VehicleController.class
+com\example\Dealer_vehicleApi\Entity\Payment$Status.class
